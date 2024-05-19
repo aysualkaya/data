@@ -1,0 +1,9 @@
+UPDATE your_table_name AS t
+SET daily_vaccinations = COALESCE(t.daily_vaccinations, median_subquery.median_vaccinations)
+FROM (
+    SELECT 
+        country, 
+        COALESCE(MEDIAN(daily_vaccinations) OVER (PARTITION BY country), 0) AS median_vaccinations
+    FROM your_table_name
+) AS median_subquery
+WHERE t.country = median_subquery.country;
